@@ -1,0 +1,21 @@
+Begin PolyList
+	Begin Polygon Texture=DefaultTexture
+		Vertex   +21168.000000,-07264.000000,+00096.000000
+		Vertex   +18096.000000,-01120.000000,+02656.000000
+		Vertex   +16048.000000,-01376.000000,-01184.000000
+	End Polygon
+	Begin Polygon Texture=DefaultTexture
+		Vertex   +16048.000000,-01376.000000,-01184.000000
+		Vertex   +18096.000000,-01120.000000,+02656.000000
+		Vertex   +14768.000000,-02656.000000,+01632.000000
+	End Polygon
+	Begin Polygon Texture=DefaultTexture
+		Vertex   +14768.000000,-02656.000000,+01632.000000
+		Vertex   +18096.000000,-01120.000000,+02656.000000
+		Vertex   +21168.000000,-07264.000000,+00096.000000
+	End Polygon
+	Begin Polygon Texture=DefaultTexture
+		Vertex   +21168.000000,-07264.000000,+00096.000000
+		Vertex   +16048.000000,-01376.000000,-01184.000000
+		Vertex   +14768.000000,-02656.000000,+01632.000000
+	End Polygon
