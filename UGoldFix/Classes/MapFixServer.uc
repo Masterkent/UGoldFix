@@ -131,6 +131,9 @@ function Server_FixCurrentMap()
 		case 'QueenEnd':
 			Server_FixCurrentMap_QueenEnd();
 			break;
+		case 'EndGame':
+			Server_FixCurrentMap_EndGame();
+			break;
 
 		// Unreal 1 DM maps
 		case 'DmAriza':
@@ -144,6 +147,9 @@ function Server_FixCurrentMap()
 			break;
 
 		// RTNP SP maps:
+		case 'Intro1':
+			Server_FixCurrentMap_Intro1();
+			break;
 		case 'DuskFalls':
 			Server_FixCurrentMap_DuskFalls();
 			break;
@@ -194,6 +200,9 @@ function Server_FixCurrentMap()
 			break;
 		case 'Nalic2':
 			Server_FixCurrentMap_Nalic2();
+			break;
+		case 'End':
+			Server_FixCurrentMap_End();
 			break;
 	}
 }
@@ -1295,6 +1304,12 @@ function Server_FixCurrentMap_QueenEnd()
 	}
 }
 
+function Server_FixCurrentMap_EndGame()
+{
+	if (Mutator.bEnableLogicMapChanges)
+		Mutator.bDisablePlayerMoves = true;
+}
+
 function Server_FixCurrentMap_DmAriza()
 {
 	if (CoverHolesInLevelsGeometry())
@@ -1343,6 +1358,12 @@ function ProtectMapMovers_Passage()
 
 //---------------------------------------------------------------------------------------------------------------------
 // RTNP maps:
+
+function Server_FixCurrentMap_Intro1()
+{
+	if (Mutator.bEnableLogicMapChanges)
+		class'SpawnableTeleporter'.static.StaticReplaceTeleporter(Teleporter(LoadLevelActor("UPakTeleporter0")));
+}
 
 function Server_FixCurrentMap_DuskFalls()
 {
@@ -1969,6 +1990,12 @@ function Server_FixCurrentMap_Nalic2()
 		MakeNavigationPathController("InventorySpot33", 'Scoutdoor', true, true);
 		MakeNavigationPathController("PathNode39", 'onward', true, true);
 	}
+}
+
+function Server_FixCurrentMap_End()
+{
+	if (Mutator.bEnableLogicMapChanges && Level.NetMode == NM_Standalone)
+		Spawn(class'Map_End_HUDController');
 }
 
 

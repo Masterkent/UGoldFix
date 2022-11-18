@@ -1,6 +1,6 @@
 //=============================================================================
-// UGoldFix v10.0                                            Author: Masterkent
-//                                                             Date: 2022-09-22
+// UGoldFix v10.1                                            Author: Masterkent
+//                                                             Date: 2022-11-18
 //=============================================================================
 class UGoldFix expands UGoldFixBase
 	config(UGoldFix);
@@ -77,6 +77,7 @@ var bool bUnrealMap;
 var bool bRtnpMap;
 var bool bRtnpIntermissionLevel;
 var bool bStandardSPMap;
+var bool bDisablePlayerMoves;
 
 // UPak resources
 var class<Actor> class_BubbleTrail;
@@ -185,6 +186,9 @@ function bool AdjustSpawnedActor(Actor A)
 {
 	local string msg;
 
+	if (bDisablePlayerMoves && PlayerPawn(A) != none)
+		DisablePlayerMoves(Pawn(A));
+
 	if (!bEnableGameFix)
 		return true;
 
@@ -223,6 +227,12 @@ function bool AdjustSpawnedActor(Actor A)
 			return DisarmProjectile(Projectile(A), bReplaceWarlordRockets);
 	}
 	return true;
+}
+
+function DisablePlayerMoves(Pawn P)
+{
+	P.AirControl = 0;
+	P.GroundSpeed = 0;
 }
 
 function bool CheckActorPackage(Actor A)
@@ -912,13 +922,13 @@ function bool ShouldReplaceBlastDecals()
 
 function string GetHumanName()
 {
-	return "UGoldFix v10.0";
+	return "UGoldFix v10.1";
 }
 
 defaultproperties
 {
-	VersionInfo="UGoldFix v10.0 [2022-09-22]"
-	Version="10.0"
+	VersionInfo="UGoldFix v10.1 [2022-11-18]"
+	Version="10.1"
 	bEnableGameFix=True
 	bEnableMapFix=True
 	bAdjustActorsOutOfWorld=True
