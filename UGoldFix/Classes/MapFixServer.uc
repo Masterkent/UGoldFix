@@ -888,34 +888,46 @@ function Server_FixCurrentMap_Bluff()
 {
 	local MoverStateSensor LiftSensor;
 	local Mover Lift;
+	local MusicEvent MusicEvent;
+	local Trigger Trigger;
 
-	if (!Mutator.bEnableLogicMapChanges)
-		return;
-
-	AssignInitialState(LoadLevelMover("Mover85"), 'TriggerOpenTimed');
-
-	AdjustDamageTriggers('vapordeath'); // control room, bottom
-	AdjustDamageTriggers('splooge'); // tower
-
-	if (UseExtraProtection())
+	if (Mutator.bEnableLogicMapChanges)
 	{
-		// tower lift
-		Lift = LoadLevelMover("Mover11");
-		LiftSensor = Spawn(class'MoverStateSensor',, Lift.Tag);
-		LiftSensor.ControlledMover = Lift;
-		LiftSensor.bCanTriggerWhenOpened = true;
-		LiftSensor.bCanTriggerWhenClosed = true;
-		Lift.Tag = 'HighTowerLift';
+		AssignInitialState(LoadLevelMover("Mover85"), 'TriggerOpenTimed');
+
+		AdjustDamageTriggers('vapordeath'); // control room, bottom
+		AdjustDamageTriggers('splooge'); // tower
+
+		if (UseExtraProtection())
+		{
+			// tower lift
+			Lift = LoadLevelMover("Mover11");
+			LiftSensor = Spawn(class'MoverStateSensor',, Lift.Tag);
+			LiftSensor.ControlledMover = Lift;
+			LiftSensor.bCanTriggerWhenOpened = true;
+			LiftSensor.bCanTriggerWhenClosed = true;
+			Lift.Tag = 'HighTowerLift';
+		}
+
+		if (UnlockNaliSecrets())
+		{
+			LoadLevelMover("Mover12").bUseTriggered = true;
+			LoadLevelMover("Mover78").bUseTriggered = true;
+			LoadLevelMover("Mover80").bUseTriggered = true;
+			LoadLevelMover("Mover82").bUseTriggered = true;
+			LoadLevelMover("Mover83").bUseTriggered = true;
+			LoadLevelMover("Mover86").bUseTriggered = true;
+		}
 	}
 
-	if (UnlockNaliSecrets())
+	if (Mutator.bEnableDecorativeMapChanges)
 	{
-		LoadLevelMover("Mover12").bUseTriggered = true;
-		LoadLevelMover("Mover78").bUseTriggered = true;
-		LoadLevelMover("Mover80").bUseTriggered = true;
-		LoadLevelMover("Mover82").bUseTriggered = true;
-		LoadLevelMover("Mover83").bUseTriggered = true;
-		LoadLevelMover("Mover86").bUseTriggered = true;
+		foreach AllActors(class'MusicEvent', MusicEvent)
+			MusicEvent.bOnceOnly = true;
+
+		Trigger = LoadLevelTrigger("Trigger47");
+		Trigger.Tag = 'mainopus';
+		AssignInitialState(Trigger, 'OtherTriggerTurnsOff');
 	}
 }
 

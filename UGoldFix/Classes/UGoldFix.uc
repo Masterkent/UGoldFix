@@ -1,6 +1,6 @@
 //=============================================================================
-// UGoldFix v10.1                                            Author: Masterkent
-//                                                             Date: 2022-11-18
+// UGoldFix v10.2                                            Author: Masterkent
+//                                                             Date: 2022-11-21
 //=============================================================================
 class UGoldFix expands UGoldFixBase
 	config(UGoldFix);
@@ -24,6 +24,7 @@ var(Advanced_GameFix) config bool bAdjustGLGrenades;
 var(Advanced_GameFix) config bool bAdjustMoverMovements;
 var(Advanced_GameFix) config bool bAdjustNetUpdateFrequency;
 var(Advanced_GameFix) config bool bAdjustSelfDamageMomentum;
+var(Advanced_GameFix) config bool bAdjustSpaceMarineCarcasses;
 var(Advanced_GameFix) config bool bAdjustSpaceMarineCARDamage;
 var(Advanced_GameFix) config bool bAdjustSpawnedPlayerState;
 var(Advanced_GameFix) config bool bAdjustTransientSoundVolume;
@@ -226,6 +227,8 @@ function bool AdjustSpawnedActor(Actor A)
 		if (A.class == class'WarlordRocket')
 			return DisarmProjectile(Projectile(A), bReplaceWarlordRockets);
 	}
+	else if (A.class == class_SpaceMarineCarcass)
+		return CheckSpaceMarineCarcass(A);
 	return true;
 }
 
@@ -852,6 +855,13 @@ function bool ReplaceUPakRocket(Actor A)
 	return false;
 }
 
+function bool CheckSpaceMarineCarcass(Actor Carcass)
+{
+	if (!bAdjustSpaceMarineCarcasses)
+		return true;
+	return Carcass.Instigator == none || !Carcass.Instigator.bDeleteMe;
+}
+
 
 function InitPlayer(Pawn P)
 {
@@ -922,13 +932,13 @@ function bool ShouldReplaceBlastDecals()
 
 function string GetHumanName()
 {
-	return "UGoldFix v10.1";
+	return "UGoldFix v10.2";
 }
 
 defaultproperties
 {
-	VersionInfo="UGoldFix v10.1 [2022-11-18]"
-	Version="10.1"
+	VersionInfo="UGoldFix v10.2 [2022-11-21]"
+	Version="10.2"
 	bEnableGameFix=True
 	bEnableMapFix=True
 	bAdjustActorsOutOfWorld=True
@@ -941,6 +951,7 @@ defaultproperties
 	bAdjustMoverMovements=True
 	bAdjustNetUpdateFrequency=True
 	bAdjustSelfDamageMomentum=False
+	bAdjustSpaceMarineCarcasses=True
 	bAdjustSpaceMarineCARDamage=False
 	bAdjustSpawnedPlayerState=True
 	bAdjustTransientSoundVolume=True
