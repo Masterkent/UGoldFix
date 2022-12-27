@@ -1,6 +1,6 @@
 //=============================================================================
-// UGoldFix v10.2                                            Author: Masterkent
-//                                                             Date: 2022-11-21
+// UGoldFix v10.3                                            Author: Masterkent
+//                                                             Date: 2022-12-22
 //=============================================================================
 class UGoldFix expands UGoldFixBase
 	config(UGoldFix);
@@ -20,6 +20,7 @@ var(Advanced_GameFix) config bool bAdjustDispersionAmmoAmount;
 var(Advanced_GameFix) config bool bAdjustDispersionFireRate;
 var(Advanced_GameFix) config bool bAdjustDistanceLightnings;
 var(Advanced_GameFix) config bool bAdjustEnhancedSightCheck;
+var(Advanced_GameFix) config bool bAdjustExplodingWalls;
 var(Advanced_GameFix) config bool bAdjustGLGrenades;
 var(Advanced_GameFix) config bool bAdjustMoverMovements;
 var(Advanced_GameFix) config bool bAdjustNetUpdateFrequency;
@@ -481,6 +482,8 @@ function ApplyServerGameFix()
 		AdjustDistanceLightnings();
 	if (bAdjustEnhancedSightCheck)
 		AdjustEnhancedSightCheck();
+	if (bAdjustExplodingWalls)
+		AdjustExplodingWalls();
 	if (bAdjustTransientSoundVolume)
 		AdjustTransientSoundVolume();
 	if (bAdjustNetUpdateFrequency)
@@ -562,6 +565,24 @@ function AdjustEnhancedSightCheck()
 	// behave in a strange manner in presence of an unreachable player or several players
 	// behind a transparent wall)
 	Level.Game.bAlwaysEnhancedSightCheck = false;
+}
+
+function AdjustExplodingWalls()
+{
+	local ExplodingWallsController ExplodingWallsController;
+	local ExplodingWall ExplodingWall;
+
+	foreach AllActors(class'ExplodingWall', ExplodingWall)
+		if (ExplodingWall.Class.Outer.Name == 'UnrealShare')
+		{
+			if (ExplodingWallsController == none)
+			{
+				ExplodingWallsController = Spawn(class'ExplodingWallsController');
+				if (ExplodingWallsController == none)
+					return;
+			}
+			ExplodingWallsController.AddExplodingWall(ExplodingWall);
+		}
 }
 
 function AdjustTransientSoundVolume()
@@ -932,13 +953,13 @@ function bool ShouldReplaceBlastDecals()
 
 function string GetHumanName()
 {
-	return "UGoldFix v10.2";
+	return "UGoldFix v10.3";
 }
 
 defaultproperties
 {
-	VersionInfo="UGoldFix v10.2 [2022-11-21]"
-	Version="10.2"
+	VersionInfo="UGoldFix v10.3 [2022-12-22]"
+	Version="10.3"
 	bEnableGameFix=True
 	bEnableMapFix=True
 	bAdjustActorsOutOfWorld=True
@@ -947,6 +968,7 @@ defaultproperties
 	bAdjustDispersionFireRate=True
 	bAdjustDistanceLightnings=True
 	bAdjustEnhancedSightCheck=True
+	bAdjustExplodingWalls=True
 	bAdjustGLGrenades=True
 	bAdjustMoverMovements=True
 	bAdjustNetUpdateFrequency=True
