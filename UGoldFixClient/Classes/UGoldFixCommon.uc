@@ -2,16 +2,20 @@ class UGoldFixCommon expands Info;
 
 // Mutator config
 var bool bAdjustDistanceLightnings;
+var bool bAdjustUPakBursts;
 var bool bDisableMoversGoodCollision;
 var bool bDisableNetInterpolatePos;
+var bool bDisableZoneEnvironmentMapping;
 
 
 replication
 {
 	reliable if (Role == ROLE_Authority)
 		bAdjustDistanceLightnings,
+		bAdjustUPakBursts,
 		bDisableMoversGoodCollision,
-		bDisableNetInterpolatePos;
+		bDisableNetInterpolatePos,
+		bDisableZoneEnvironmentMapping;
 }
 
 
@@ -25,12 +29,29 @@ simulated event PostNetBeginPlay()
 
 simulated function ApplyNetClientGameFix()
 {
+	local UGoldFixClientSpawnNotify ClientSpawnNotify;
+
 	if (bAdjustDistanceLightnings)
 		AdjustDistanceLightnings();
 	if (bDisableMoversGoodCollision)
 		DisableMoversGoodCollision(Level);
-	if (bDisableNetInterpolatePos)
-		Spawn(class'UGoldFixClientSpawnNotify');
+	if (bDisableZoneEnvironmentMapping)
+		DisableZoneEnvironmentMapping();
+	bDisableNetInterpolatePos = bDisableNetInterpolatePos && DynamicLoadObject("Engine.Actor.bNetInterpolatePos", class'Property', true) != none;
+	if (ShouldUseClientSpawnNotify())
+	{
+		ClientSpawnNotify = Spawn(class'UGoldFixClientSpawnNotify');
+		if (ClientSpawnNotify != none)
+		{
+			ClientSpawnNotify.bAdjustUPakBursts = bAdjustUPakBursts;
+			ClientSpawnNotify.bDisableNetInterpolatePos = bDisableNetInterpolatePos;
+		}
+	}
+}
+
+simulated function bool ShouldUseClientSpawnNotify()
+{
+	return bAdjustUPakBursts || bDisableNetInterpolatePos;
 }
 
 simulated function AdjustDistanceLightnings()
@@ -60,6 +81,17 @@ static function DisableMoversGoodCollision(LevelInfo Level)
 static function bool MoverGoodCollisionSupported()
 {
 	return DynamicLoadObject("Engine.Mover.bUseGoodCollision", class'Object', true) != none;
+}
+
+simulated function DisableZoneEnvironmentMapping()
+{
+	local ZoneInfo Zone;
+
+	if (int(Level.EngineVersion) == 227 && int(Level.EngineSubVersion) == 9)
+	{
+		foreach AllActors(class'ZoneInfo', Zone)
+			Zone.SetPropertyText("EnvironmentColor", "(X=0,Y=0,Z=0)");
+	}
 }
 
 defaultproperties

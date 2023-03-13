@@ -1,6 +1,6 @@
 //=============================================================================
-// UGoldFix v10.3                                            Author: Masterkent
-//                                                             Date: 2022-12-22
+// UGoldFix v10.4                                            Author: Masterkent
+//                                                             Date: 2023-03-13
 //=============================================================================
 class UGoldFix expands UGoldFixBase
 	config(UGoldFix);
@@ -29,11 +29,13 @@ var(Advanced_GameFix) config bool bAdjustSpaceMarineCarcasses;
 var(Advanced_GameFix) config bool bAdjustSpaceMarineCARDamage;
 var(Advanced_GameFix) config bool bAdjustSpawnedPlayerState;
 var(Advanced_GameFix) config bool bAdjustTransientSoundVolume;
+var(Advanced_GameFix) config bool bAdjustUPakBursts;
 var(Advanced_GameFix) config bool bAllowAbnormalActors;
 var(Advanced_GameFix) config bool bCheckActorPackages;
 var(Advanced_GameFix) config bool bDisableMoversGoodCollision;
 var(Advanced_GameFix) config bool bDisableNetInterpolatePos;
 var(Advanced_GameFix) config bool bDisableOrientToGround;
+var(Advanced_GameFix) config bool bDisableZoneEnvironmentMapping; // only for 227i network clients
 var(Advanced_GameFix) config bool bExtraPlayerStartLookup;
 var(Advanced_GameFix) config bool bGiveUPakScubaGear;
 var(Advanced_GameFix) config bool bRemoveDestructibleBrushes;
@@ -507,8 +509,10 @@ function ApplyCommonGameFix()
 	UGoldFixCommon = Spawn(class'UGoldFixCommon', self);
 
 	UGoldFixCommon.bAdjustDistanceLightnings = bAdjustDistanceLightnings;
+	UGoldFixCommon.bAdjustUPakBursts = bAdjustUPakBursts;
 	UGoldFixCommon.bDisableMoversGoodCollision = bDisableMoversGoodCollision;
 	UGoldFixCommon.bDisableNetInterpolatePos = bDisableNetInterpolatePos;
+	UGoldFixCommon.bDisableZoneEnvironmentMapping = bDisableZoneEnvironmentMapping;
 }
 
 // Called after map-specific fixes
@@ -953,13 +957,13 @@ function bool ShouldReplaceBlastDecals()
 
 function string GetHumanName()
 {
-	return "UGoldFix v10.3";
+	return "UGoldFix v10.4";
 }
 
 defaultproperties
 {
-	VersionInfo="UGoldFix v10.3 [2022-12-22]"
-	Version="10.3"
+	VersionInfo="UGoldFix v10.4 [2023-03-13]"
+	Version="10.4"
 	bEnableGameFix=True
 	bEnableMapFix=True
 	bAdjustActorsOutOfWorld=True
@@ -977,11 +981,13 @@ defaultproperties
 	bAdjustSpaceMarineCARDamage=False
 	bAdjustSpawnedPlayerState=True
 	bAdjustTransientSoundVolume=True
+	bAdjustUPakBursts=True
 	bAllowAbnormalActors=False
 	bCheckActorPackages=True
 	bDisableMoversGoodCollision=True
 	bDisableNetInterpolatePos=True
 	bDisableOrientToGround=True
+	bDisableZoneEnvironmentMapping=True
 	bExtraPlayerStartLookup=False
 	bGiveUPakScubaGear=True
 	bRemoveDestructibleBrushes=True

@@ -16,6 +16,8 @@ event Actor SpawnNotification(Actor A)
 	{
 		if (A.Class == UGoldFix.class_Octagon && UGoldFix.bReplaceOctagons && Level.NetMode != NM_Standalone)
 			return ReplaceOctagon(A);
+		if (A.Class == UGoldFix.class_UPakBurst && UGoldFix.bAdjustUPakBursts)
+			return AdjustUPakBurst(A);
 	}
 	else if (Projectile(A) != none)
 	{
@@ -155,6 +157,12 @@ function Actor ReplaceOctagon(Actor A)
 
 	A.SetLocation(vect(0, 0, -100000));
 	return Replacement;
+}
+
+function Actor AdjustUPakBurst(Actor A)
+{
+	Spawn(class'UPak_UPakBurst_Adjustment', A);
+	return A;
 }
 
 defaultproperties

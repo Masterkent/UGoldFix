@@ -13,22 +13,16 @@ simulated function LocalExplosion()
 	local vector HitLocation, HitNormal;
 	local Effects UPakBurst, UPakExplosion1;
 	local Actor DecalActor;
-	local class<Effects> class_UPakBurst;
 	local class<Effects> class_UPakExplosion1;
 
 	HitLocation = GetHitLocation();
 	HitNormal = GetHitNormal();
 
-	class_UPakBurst = class<Effects>(DynamicLoadObject("UPak.UPakBurst", class'class', true));
+	UPakBurst = Spawn(class'UPak_UPakBurst',,, HitLocation + HitNormal * 16);
+	if (UPakBurst != none)
+		UPakBurst.RemoteRole = ROLE_None;
+
 	class_UPakExplosion1 = class<Effects>(DynamicLoadObject("UPak.UPakExplosion1", class'class', true));
-
-	if (class_UPakBurst != none)
-	{
-		UPakBurst = Spawn(class_UPakBurst,,, HitLocation + HitNormal * 16);
-		if (UPakBurst != none)
-			UPakBurst.RemoteRole = ROLE_None;
-	}
-
 	if (class_UPakExplosion1 != none)
 	{
 		UPakExplosion1 = Spawn(class_UPakExplosion1,,, HitLocation + HitNormal * 8 , rotator(HitNormal));
