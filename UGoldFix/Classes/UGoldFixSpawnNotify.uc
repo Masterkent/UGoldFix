@@ -1,6 +1,8 @@
 class UGoldFixSpawnNotify expands SpawnNotify;
 
 var UGoldFix UGoldFix;
+var class<Actor> TrackSpawnClass;
+var Actor LastSpawnedActor;
 
 function Init(UGoldFix UGoldFix)
 {
@@ -11,6 +13,9 @@ event Actor SpawnNotification(Actor A)
 {
 	if (UGoldFix == none || !UGoldFix.bEnableGameFix)
 		return A;
+
+	if (TrackSpawnClass != none && ClassIsChildOf(A.Class, TrackSpawnClass))
+		LastSpawnedActor = A;
 
 	if (Effects(A) != none)
 	{

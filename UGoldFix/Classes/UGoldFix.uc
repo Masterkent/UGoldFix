@@ -1,6 +1,6 @@
 //=============================================================================
-// UGoldFix v10.4                                            Author: Masterkent
-//                                                             Date: 2023-03-13
+// UGoldFix v10.5                                            Author: Masterkent
+//                                                             Date: 2023-07-12
 //=============================================================================
 class UGoldFix expands UGoldFixBase
 	config(UGoldFix);
@@ -15,6 +15,7 @@ var(General) config bool bEnableMapFix;
 
 // - Advanced [bEnableGameFix]:
 var(Advanced_GameFix) config bool bAdjustActorsOutOfWorld;
+var(Advanced_GameFix) config bool bAdjustArbitItemRespawnTime;
 var(Advanced_GameFix) config bool bAdjustCrushingMovers;
 var(Advanced_GameFix) config bool bAdjustDispersionAmmoAmount;
 var(Advanced_GameFix) config bool bAdjustDispersionFireRate;
@@ -39,6 +40,7 @@ var(Advanced_GameFix) config bool bDisableZoneEnvironmentMapping; // only for 22
 var(Advanced_GameFix) config bool bExtraPlayerStartLookup;
 var(Advanced_GameFix) config bool bGiveUPakScubaGear;
 var(Advanced_GameFix) config bool bRemoveDestructibleBrushes;
+var(Advanced_GameFix) config bool bReplaceArbitItems;
 var(Advanced_GameFix) config bool bReplaceBigRocks;
 var(Advanced_GameFix) config bool bReplaceBlastDecals;
 var(Advanced_GameFix) config bool bReplaceExplosiveBullets;
@@ -117,6 +119,7 @@ struct StationaryEquipmentTypeInfo
 var array<StationaryEquipmentTypeInfo> StationaryEquipmentClasses;
 
 var UGoldFixGameRules GameRules;
+var UGoldFixSpawnNotify SpawnNotify;
 var transient MapFixClient MapFixClient;
 
 
@@ -141,7 +144,9 @@ function ApplyUGoldFix()
 	{
 		LoadUPakResources();
 		InitClassReplacements();
-		Spawn(class'UGoldFixSpawnNotify').Init(self);
+		SpawnNotify = Spawn(class'UGoldFixSpawnNotify');
+		if (SpawnNotify != none)
+			SpawnNotify.Init(self);
 
 		ApplyServerGameFix();
 		ApplyCommonGameFix();
@@ -476,6 +481,8 @@ function ApplyServerGameFix()
 {
 	if (bAdjustActorsOutOfWorld)
 		AdjustActorsOutOfWorld();
+	if (bAdjustArbitItemRespawnTime || bReplaceArbitItems)
+		AdjustArbitItems();
 	if (bRemoveDestructibleBrushes)
 		RemoveDestructibleBrushes();
 	if (bAdjustCrushingMovers)
@@ -529,6 +536,19 @@ function AdjustActorsOutOfWorld()
 	foreach AllActors(class'Actor', A)
 		if (A.Region.ZoneNumber <= 0 && A.Physics == PHYS_Falling && A.bNoDelete)
 			A.SetPhysics(PHYS_None);
+}
+
+function AdjustArbitItems()
+{
+	local ArbitItem ArbitItem;
+
+	foreach AllActors(class'ArbitItem', ArbitItem)
+	{
+		if (bAdjustArbitItemRespawnTime)
+			ArbitItem.AdjustedSpawnTime = 1.0;
+		if (bReplaceArbitItems)
+			class'ArbitItemController'.static.StaticReplaceArbitItem(ArbitItem, SpawnNotify);
+	}
 }
 
 function RemoveDestructibleBrushes()
@@ -957,16 +977,17 @@ function bool ShouldReplaceBlastDecals()
 
 function string GetHumanName()
 {
-	return "UGoldFix v10.4";
+	return "UGoldFix v10.5";
 }
 
 defaultproperties
 {
-	VersionInfo="UGoldFix v10.4 [2023-03-13]"
-	Version="10.4"
+	VersionInfo="UGoldFix v10.5 [2023-07-12]"
+	Version="10.5"
 	bEnableGameFix=True
 	bEnableMapFix=True
 	bAdjustActorsOutOfWorld=True
+	bAdjustArbitItemRespawnTime=False
 	bAdjustCrushingMovers=True
 	bAdjustDispersionAmmoAmount=False
 	bAdjustDispersionFireRate=True
@@ -991,6 +1012,7 @@ defaultproperties
 	bExtraPlayerStartLookup=False
 	bGiveUPakScubaGear=True
 	bRemoveDestructibleBrushes=True
+	bReplaceArbitItems=True
 	bReplaceBigRocks=True
 	bReplaceBlastDecals=True
 	bReplaceExplosiveBullets=True
