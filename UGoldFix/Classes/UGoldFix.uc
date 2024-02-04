@@ -1,6 +1,6 @@
 //=============================================================================
-// UGoldFix v10.5                                            Author: Masterkent
-//                                                             Date: 2023-07-12
+// UGoldFix v10.6                                            Author: Masterkent
+//                                                             Date: 2024-02-04
 //=============================================================================
 class UGoldFix expands UGoldFixBase
 	config(UGoldFix);
@@ -30,6 +30,7 @@ var(Advanced_GameFix) config bool bAdjustSpaceMarineCarcasses;
 var(Advanced_GameFix) config bool bAdjustSpaceMarineCARDamage;
 var(Advanced_GameFix) config bool bAdjustSpawnedPlayerState;
 var(Advanced_GameFix) config bool bAdjustTransientSoundVolume;
+var(Advanced_GameFix) config bool bAdjustTriggeredDeaths;
 var(Advanced_GameFix) config bool bAdjustUPakBursts;
 var(Advanced_GameFix) config bool bAllowAbnormalActors;
 var(Advanced_GameFix) config bool bCheckActorPackages;
@@ -495,6 +496,8 @@ function ApplyServerGameFix()
 		AdjustExplodingWalls();
 	if (bAdjustTransientSoundVolume)
 		AdjustTransientSoundVolume();
+	if (bAdjustTriggeredDeaths)
+		AdjustTriggeredDeaths();
 	if (bAdjustNetUpdateFrequency)
 		AdjustNetUpdateFrequency();
 	if (bDisableMoversGoodCollision)
@@ -621,6 +624,22 @@ function AdjustTransientSoundVolume()
 			if (A.TransientSoundVolume > MaxTransientSoundVolume)
 				A.TransientSoundVolume = MaxTransientSoundVolume;
 		}
+}
+
+function AdjustTriggeredDeaths()
+{
+	local TriggeredDeath TriggeredDeath;
+	local UGoldTriggeredDeath UGoldTriggeredDeath;
+
+	foreach AllActors(class'TriggeredDeath', TriggeredDeath)
+	{
+		TriggeredDeath.SetCollision(false);
+		UGoldTriggeredDeath = TriggeredDeath.Spawn(class'UGoldTriggeredDeath');
+		UGoldTriggeredDeath.TriggeredDeath = TriggeredDeath;
+		UGoldTriggeredDeath.SetCollisionSize(TriggeredDeath.CollisionRadius, TriggeredDeath.CollisionHeight);
+		UGoldTriggeredDeath.bUseMeshCollision = TriggeredDeath.bUseMeshCollision;
+		UGoldTriggeredDeath.Mesh = TriggeredDeath.Mesh;
+	}
 }
 
 function AdjustMoverMovements()
@@ -977,13 +996,13 @@ function bool ShouldReplaceBlastDecals()
 
 function string GetHumanName()
 {
-	return "UGoldFix v10.5";
+	return "UGoldFix v10.6";
 }
 
 defaultproperties
 {
-	VersionInfo="UGoldFix v10.5 [2023-07-12]"
-	Version="10.5"
+	VersionInfo="UGoldFix v10.6 [2024-02-04]"
+	Version="10.6"
 	bEnableGameFix=True
 	bEnableMapFix=True
 	bAdjustActorsOutOfWorld=True
@@ -1002,6 +1021,7 @@ defaultproperties
 	bAdjustSpaceMarineCARDamage=False
 	bAdjustSpawnedPlayerState=True
 	bAdjustTransientSoundVolume=True
+	bAdjustTriggeredDeaths=False
 	bAdjustUPakBursts=True
 	bAllowAbnormalActors=False
 	bCheckActorPackages=True

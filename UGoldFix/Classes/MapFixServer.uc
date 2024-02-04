@@ -215,6 +215,8 @@ function Server_FixCurrentMap_NyLeve()
 {
 	if (CoverHolesInLevelsGeometry())
 		Spawn(class'DMesh_NyLeve_Brush968',,, class'DMesh_NyLeve_Brush968'.default.Location);
+	if (Mutator.bEnableDecorativeMapChanges)
+		LoadLevelTrigger("Trigger4").bTriggerOnceOnly = true; // MusicEvent5
 	ProtectMapMovers_NyLeve();
 }
 
@@ -341,7 +343,7 @@ function Server_FixCurrentMap_Dark()
 function Server_FixCurrentMap_Harobed()
 {
 	local Dispatcher disp;
-	local Trigger tr, Trigger26;
+	local Trigger Trigger, UndergroundTrigger;
 
 	if (CoverHolesInLevelsGeometry())
 	{
@@ -361,17 +363,27 @@ function Server_FixCurrentMap_Harobed()
 	disp.OutDelays[1] = 6; // the Dispatcher can't be retriggered during 6 seconds
 
 	LoadLevelMover("Mover13").Event = 'Disp_Tomb';
-	Trigger26 = LoadLevelTrigger("Trigger26");
-	tr = Spawn(class'Trigger',, 'Tomb', Trigger26.Location);
-	tr.SetCollisionSize(Trigger26.CollisionRadius, Trigger26.CollisionHeight);
-	tr.Event = 'Disp_Tomb';
-	AssignInitialState(tr, 'OtherTriggerToggles');
+	UndergroundTrigger = LoadLevelTrigger("Trigger26");
+	Trigger = Spawn(class'Trigger',, 'Tomb', UndergroundTrigger.Location);
+	Trigger.SetCollisionSize(UndergroundTrigger.CollisionRadius, UndergroundTrigger.CollisionHeight);
+	Trigger.Event = 'Disp_Tomb';
+	AssignInitialState(Trigger, 'OtherTriggerToggles');
 
 	if (ImproveNPCBehavior())
 	{
 		LoadLevelMover("Mover9").BumpType = BT_PawnBump;
 		LoadLevelMover("Mover10").BumpType = BT_PawnBump;
 		BlockNavigationPathThrough("Teleporter1");
+	}
+
+	if (Mutator.bEnableDecorativeMapChanges)
+	{
+		UndergroundTrigger.bTriggerOnceOnly = true; // MusicEvent2
+		Trigger = LoadLevelTrigger("Trigger27"); // MusicEvent8
+		Trigger.bInitiallyActive = false;
+		Trigger.bTriggerOnceOnly = true;
+		Trigger.InitialState = 'OtherTriggerTurnsOn';
+		Trigger.Tag = 'Silent';
 	}
 }
 
@@ -625,6 +637,9 @@ function Server_FixCurrentMap_IsvKran32()
 
 	if (Mutator.bEnableLogicMapChanges)
 		AdjustDamageTriggers(LoadLevelActor("SpecialEvent102").Tag);
+
+	if (Mutator.bEnableDecorativeMapChanges)
+		LoadLevelMusicEvent("MusicEvent2").bOnceOnly = true;
 }
 
 function Server_FixCurrentMap_IsvDeck1()
@@ -720,6 +735,12 @@ function Server_FixCurrentMap_TheSunspire()
 		LiftCenter(LoadLevelActor("LiftCenter1")).LiftTag = m.BumpEvent;
 		LiftExit(LoadLevelActor("LiftExit2")).LiftTag = m.BumpEvent;
 		LiftExit(LoadLevelActor("LiftExit3")).LiftTag = m.BumpEvent;
+	}
+
+	if (Mutator.bEnableDecorativeMapChanges)
+	{
+		LoadLevelMusicEvent("MusicEvent0").bOnceOnly = true;
+		LoadLevelMusicEvent("MusicEvent1").bOnceOnly = true;
 	}
 }
 
@@ -1279,7 +1300,7 @@ function Server_FixCurrentMap_ExtremeEnd()
 			FlightTrigger.ReTriggerDelay = 2;
 		}
 		if (Mutator.bEnableDecorativeMapChanges)
-			MusicEvent(LoadLevelActor("MusicEvent0")).bOnceOnly = true;
+			LoadLevelMusicEvent("MusicEvent0").bOnceOnly = true;
 	}
 }
 
@@ -2104,6 +2125,11 @@ function DisableTrigger(string TriggerName)
 function Dispatcher LoadLevelDispatcher(string DispatcherName)
 {
 	return Dispatcher(LoadLevelActor(DispatcherName));
+}
+
+function MusicEvent LoadLevelMusicEvent(string MusicEventName)
+{
+	return MusicEvent(LoadLevelActor(MusicEventName));
 }
 
 function EnablePlayerStart(string PlayerStartName)
