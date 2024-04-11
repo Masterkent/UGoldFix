@@ -2,6 +2,7 @@ class UGoldFixCommon expands Info;
 
 // Mutator config
 var bool bAdjustDistanceLightnings;
+var bool bAdjustTextures;
 var bool bAdjustUPakBursts;
 var bool bDisableMoversGoodCollision;
 var bool bDisableNetInterpolatePos;
@@ -12,6 +13,7 @@ replication
 {
 	reliable if (Role == ROLE_Authority)
 		bAdjustDistanceLightnings,
+		bAdjustTextures,
 		bAdjustUPakBursts,
 		bDisableMoversGoodCollision,
 		bDisableNetInterpolatePos,
@@ -23,8 +25,15 @@ simulated event PostNetBeginPlay()
 {
 	if (Level.NetMode != NM_Client)
 		return;
+	ApplyClientGameFix();
 	ApplyNetClientGameFix();
 	Destroy();
+}
+
+simulated function ApplyClientGameFix()
+{
+	if (bAdjustTextures)
+		AdjustTextures();
 }
 
 simulated function ApplyNetClientGameFix()
@@ -67,6 +76,20 @@ simulated function AdjustDistanceLightnings()
 		}
 }
 
+simulated function AdjustTextures()
+{
+	local Texture Texture;
+
+	foreach AllObjects(class'Texture', Texture)
+	{
+		if (GetObjectPackageName(Texture) == 'SkyBox')
+		{
+			if (Texture.Outer.Name == '2nd')
+				Texture.bMasked = true;
+		}
+	}
+}
+
 static function DisableMoversGoodCollision(LevelInfo Level)
 {
 	local Mover m;
@@ -92,6 +115,13 @@ simulated function DisableZoneEnvironmentMapping()
 		foreach AllActors(class'ZoneInfo', Zone)
 			Zone.SetPropertyText("EnvironmentColor", "(X=0,Y=0,Z=0)");
 	}
+}
+
+static function name GetObjectPackageName(Object X)
+{
+	while (X.Outer != none)
+		X = X.Outer;
+	return X.Name;
 }
 
 defaultproperties

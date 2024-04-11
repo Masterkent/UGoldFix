@@ -29,6 +29,7 @@ var(Advanced_GameFix) config bool bAdjustSelfDamageMomentum;
 var(Advanced_GameFix) config bool bAdjustSpaceMarineCarcasses;
 var(Advanced_GameFix) config bool bAdjustSpaceMarineCARDamage;
 var(Advanced_GameFix) config bool bAdjustSpawnedPlayerState;
+var(Advanced_GameFix) config bool bAdjustTextures;
 var(Advanced_GameFix) config bool bAdjustTransientSoundVolume;
 var(Advanced_GameFix) config bool bAdjustTriggeredDeaths;
 var(Advanced_GameFix) config bool bAdjustUPakBursts;
@@ -513,16 +514,20 @@ function ApplyCommonGameFix()
 {
 	local UGoldFixCommon UGoldFixCommon;
 
-	if (Level.NetMode == NM_Standalone)
-		return;
-
 	UGoldFixCommon = Spawn(class'UGoldFixCommon', self);
 
 	UGoldFixCommon.bAdjustDistanceLightnings = bAdjustDistanceLightnings;
+	UGoldFixCommon.bAdjustTextures = bAdjustTextures;
 	UGoldFixCommon.bAdjustUPakBursts = bAdjustUPakBursts;
 	UGoldFixCommon.bDisableMoversGoodCollision = bDisableMoversGoodCollision;
 	UGoldFixCommon.bDisableNetInterpolatePos = bDisableNetInterpolatePos;
 	UGoldFixCommon.bDisableZoneEnvironmentMapping = bDisableZoneEnvironmentMapping;
+
+	if (Level.NetMode == NM_Standalone)
+	{
+		UGoldFixCommon.ApplyClientGameFix();
+		UGoldFixCommon.Destroy();
+	}
 }
 
 // Called after map-specific fixes
@@ -996,13 +1001,13 @@ function bool ShouldReplaceBlastDecals()
 
 function string GetHumanName()
 {
-	return "UGoldFix v10.6";
+	return "UGoldFix v10.7";
 }
 
 defaultproperties
 {
-	VersionInfo="UGoldFix v10.6 [2024-02-04]"
-	Version="10.6"
+	VersionInfo="UGoldFix v10.7 [2024-04-10]"
+	Version="10.7"
 	bEnableGameFix=True
 	bEnableMapFix=True
 	bAdjustActorsOutOfWorld=True
@@ -1020,6 +1025,7 @@ defaultproperties
 	bAdjustSpaceMarineCarcasses=True
 	bAdjustSpaceMarineCARDamage=False
 	bAdjustSpawnedPlayerState=True
+	bAdjustTextures=True
 	bAdjustTransientSoundVolume=True
 	bAdjustTriggeredDeaths=False
 	bAdjustUPakBursts=True
