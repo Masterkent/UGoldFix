@@ -1,6 +1,6 @@
 //=============================================================================
-// UGoldFix v10.6                                            Author: Masterkent
-//                                                             Date: 2024-02-04
+// UGoldFix v10.8                                            Author: Masterkent
+//                                                             Date: 2024-12-31
 //=============================================================================
 class UGoldFix expands UGoldFixBase
 	config(UGoldFix);
@@ -23,6 +23,7 @@ var(Advanced_GameFix) config bool bAdjustDistanceLightnings;
 var(Advanced_GameFix) config bool bAdjustEnhancedSightCheck;
 var(Advanced_GameFix) config bool bAdjustExplodingWalls;
 var(Advanced_GameFix) config bool bAdjustGLGrenades;
+var(Advanced_GameFix) config bool bAdjustMercenaryShield;
 var(Advanced_GameFix) config bool bAdjustMoverMovements;
 var(Advanced_GameFix) config bool bAdjustNetUpdateFrequency;
 var(Advanced_GameFix) config bool bAdjustSelfDamageMomentum;
@@ -495,6 +496,8 @@ function ApplyServerGameFix()
 		AdjustEnhancedSightCheck();
 	if (bAdjustExplodingWalls)
 		AdjustExplodingWalls();
+	if (bAdjustMercenaryShield)
+		InitMercenaryShieldAdjustments();
 	if (bAdjustTransientSoundVolume)
 		AdjustTransientSoundVolume();
 	if (bAdjustTriggeredDeaths)
@@ -615,6 +618,14 @@ function AdjustExplodingWalls()
 			}
 			ExplodingWallsController.AddExplodingWall(ExplodingWall);
 		}
+}
+
+function InitMercenaryShieldAdjustments()
+{
+	local Mercenary Mercenary;
+
+	foreach AllActors(class'Mercenary', Mercenary)
+		Spawn(class'MercenaryShieldController', Mercenary);
 }
 
 function AdjustTransientSoundVolume()
@@ -1001,13 +1012,13 @@ function bool ShouldReplaceBlastDecals()
 
 function string GetHumanName()
 {
-	return "UGoldFix v10.7";
+	return "UGoldFix v10.8";
 }
 
 defaultproperties
 {
-	VersionInfo="UGoldFix v10.7 [2024-04-10]"
-	Version="10.7"
+	VersionInfo="UGoldFix v10.8 [2024-12-31]"
+	Version="10.8"
 	bEnableGameFix=True
 	bEnableMapFix=True
 	bAdjustActorsOutOfWorld=True
@@ -1019,6 +1030,7 @@ defaultproperties
 	bAdjustEnhancedSightCheck=True
 	bAdjustExplodingWalls=True
 	bAdjustGLGrenades=True
+	bAdjustMercenaryShield=False
 	bAdjustMoverMovements=True
 	bAdjustNetUpdateFrequency=True
 	bAdjustSelfDamageMomentum=False

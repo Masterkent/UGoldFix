@@ -24,6 +24,11 @@ event Actor SpawnNotification(Actor A)
 		if (A.Class == UGoldFix.class_UPakBurst && UGoldFix.bAdjustUPakBursts)
 			return AdjustUPakBurst(A);
 	}
+	else if (Mercenary(A) != none)
+	{
+		if (UGoldFix.bAdjustMercenaryShield)
+			MakeMercenaryShieldController(Mercenary(A));
+	}
 	else if (Projectile(A) != none)
 	{
 		if (BigRock(A) != none && UGoldFix.bReplaceBigRocks)
@@ -168,6 +173,11 @@ function Actor AdjustUPakBurst(Actor A)
 {
 	Spawn(class'UPak_UPakBurst_Adjustment', A);
 	return A;
+}
+
+function MakeMercenaryShieldController(Mercenary Mercenary)
+{
+	Spawn(class'MercenaryShieldController', Mercenary);
 }
 
 defaultproperties
